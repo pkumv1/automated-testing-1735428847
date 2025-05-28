@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E2E Testing Dashboard - EGOV-RTS-NMC</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <title>E2E Test Results Dashboard - EGOV-RTS-NMC</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,7 +17,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #ffffff;
+            background: white;
             color: #333;
             line-height: 1.6;
         }
@@ -29,20 +31,10 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 12px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header .subtitle {
-            opacity: 0.9;
-            font-size: 1.1em;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         .metrics-grid {
@@ -54,702 +46,541 @@
         
         .metric-card {
             background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
             padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         
         .metric-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .metric-value {
-            font-size: 2.5em;
+            font-size: 36px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin: 10px 0;
         }
         
-        .metric-label {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
         
         .chart-container {
             background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .chart-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid #e1e4e8;
         }
         
         .tab {
             padding: 10px 20px;
-            cursor: pointer;
-            border: none;
             background: none;
-            font-size: 1em;
-            color: #666;
-            transition: all 0.3s ease;
-            position: relative;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
         }
         
         .tab.active {
             color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .details-section {
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        th {
+            background: #f6f8fa;
             font-weight: 600;
         }
         
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #667eea;
+        .highlight-row {
+            background: #fffbdd;
         }
         
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .heatmap {
-            margin: 20px 0;
-        }
-        
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        
-        .test-list {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .test-item {
-            padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s ease;
-        }
-        
-        .test-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .test-item:last-child {
-            border-bottom: none;
+        .healing-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: #e3f2fd;
+            color: #1976d2;
         }
         
         .status-badge {
+            display: inline-block;
             padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
+            border-radius: 4px;
+            font-size: 14px;
         }
         
-        .status-passed {
+        .status-badge.passed {
             background: #d4edda;
             color: #155724;
         }
         
-        .status-failed {
+        .status-badge.failed {
             background: #f8d7da;
             color: #721c24;
         }
         
-        .status-healed {
-            background: #fff3cd;
-            color: #856404;
+        .status-badge.healed {
+            background: #cce5ff;
+            color: #004085;
         }
         
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 10px 0;
+        .animated-number {
+            animation: countUp 1s ease-out;
         }
         
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s ease;
-        }
-        
-        .floating-action {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-        }
-        
-        .floating-action:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .animate-in {
-            animation: fadeIn 0.5s ease forwards;
+        .repo-info {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .repo-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: #667eea;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background: #e1e4e8;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <div class="header animate-in">
-            <h1>E2E Testing Dashboard</h1>
-            <div class="subtitle">EGOV-RTS-NMC • Real-time Test Results</div>
-        </div>
-        
-        <div class="metrics-grid">
-            <div class="metric-card animate-in" style="animation-delay: 0.1s">
-                <div class="metric-value">87.5%</div>
-                <div class="metric-label">Success Rate</div>
-            </div>
-            <div class="metric-card animate-in" style="animation-delay: 0.2s">
-                <div class="metric-value">8</div>
-                <div class="metric-label">Total Tests</div>
-            </div>
-            <div class="metric-card animate-in" style="animation-delay: 0.3s">
-                <div class="metric-value">3</div>
-                <div class="metric-label">Self-Healed</div>
-            </div>
-            <div class="metric-card animate-in" style="animation-delay: 0.4s">
-                <div class="metric-value">75%</div>
-                <div class="metric-label">Test Reduction</div>
-            </div>
-            <div class="metric-card animate-in" style="animation-delay: 0.5s">
-                <div class="metric-value">45.3s</div>
-                <div class="metric-label">Execution Time</div>
-            </div>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('overview')">Overview</button>
-            <button class="tab" onclick="showTab('changes')">Change Analysis</button>
-            <button class="tab" onclick="showTab('tests')">Test Results</button>
-            <button class="tab" onclick="showTab('performance')">Performance</button>
-            <button class="tab" onclick="showTab('healing')">Self-Healing</button>
-        </div>
-        
-        <div id="overview" class="tab-content active">
-            <div class="chart-container">
-                <h3 class="chart-title">Test Execution Summary</h3>
-                <canvas id="testSummaryChart" width="400" height="200"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3 class="chart-title">Repository Analysis</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <canvas id="languageChart" width="200" height="200"></canvas>
-                    <canvas id="frameworkChart" width="200" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <div id="changes" class="tab-content">
-            <div class="chart-container">
-                <h3 class="chart-title">File Change Heatmap</h3>
-                <div id="heatmap" class="heatmap"></div>
-            </div>
-            
-            <div class="chart-container">
-                <h3 class="chart-title">Changed Components Coverage</h3>
-                <div class="test-list">
-                    <div class="test-item">
-                        <div>
-                            <strong>RTSservices/java/com/mars/service/</strong>
-                            <div style="color: #666; font-size: 0.9em;">Lines: 120, 145, 167 • Functions: 2</div>
-                        </div>
-                        <span class="status-badge status-passed">100% Coverage</span>
-                    </div>
-                    <div class="test-item">
-                        <div>
-                            <strong>RTSservices/web/pages/citizendocument/</strong>
-                            <div style="color: #666; font-size: 0.9em;">Lines: 45-47 • Form validation</div>
-                        </div>
-                        <span class="status-badge status-passed">100% Coverage</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="tests" class="tab-content">
-            <div class="chart-container">
-                <h3 class="chart-title">Test Results by Component</h3>
-                <canvas id="componentTestChart" width="400" height="300"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3 class="chart-title">Detailed Test Results</h3>
-                <div class="test-list" id="testResultsList"></div>
-            </div>
-        </div>
-        
-        <div id="performance" class="tab-content">
-            <div class="chart-container">
-                <h3 class="chart-title">Browser Performance Comparison</h3>
-                <canvas id="browserPerfChart" width="400" height="300"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3 class="chart-title">Load Test Results</h3>
-                <canvas id="loadTestChart" width="400" height="300"></canvas>
-            </div>
-        </div>
-        
-        <div id="healing" class="tab-content">
-            <div class="chart-container">
-                <h3 class="chart-title">Self-Healing Success Rate</h3>
-                <canvas id="healingChart" width="400" height="200"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3 class="chart-title">Healing Strategies Used</h3>
-                <div class="test-list">
-                    <div class="test-item">
-                        <div>
-                            <strong>Selector Fallback</strong>
-                            <div style="color: #666; font-size: 0.9em;">#docNumber → input[name='documentNumber']</div>
-                        </div>
-                        <span class="status-badge status-healed">2 instances</span>
-                    </div>
-                    <div class="test-item">
-                        <div>
-                            <strong>Endpoint Discovery</strong>
-                            <div style="color: #666; font-size: 0.9em;">/workflow/process → /workflow/execute</div>
-                        </div>
-                        <span class="status-badge status-healed">1 instance</span>
-                    </div>
-                    <div class="test-item">
-                        <div>
-                            <strong>Text Matching</strong>
-                            <div style="color: #666; font-size: 0.9em;">Found dropdown near 'Document Type' text</div>
-                        </div>
-                        <span class="status-badge status-healed">1 instance</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="root"></div>
     
-    <div class="floating-action" onclick="exportReport()">
-        📊
-    </div>
-    
-    <div class="tooltip" id="tooltip" style="display: none;"></div>
-    
-    <script>
-        // Test data
-        const testData = {
-            summary: { passed: 7, failed: 1, healed: 3 },
-            languages: {
-                'Java': 65,
-                'JSP': 20,
-                'JavaScript': 10,
-                'CSS': 3,
-                'XML': 2
-            },
-            frameworks: ['Spring 4.0.6', 'Hibernate 4.3.6', 'Apache Tiles', 'JSP/Servlets'],
-            browserPerf: {
-                'Chromium': 456,
-                'Firefox': 489,
-                'Safari': 512
-            },
-            loadTest: {
-                users: [10, 50, 100],
-                responseTime: [165, 225, 300],
-                errors: [0, 0, 2]
-            },
-            tests: [
-                { name: 'Form Validation - New Rules', status: 'healed', time: '3.2s' },
-                { name: 'Form Submission', status: 'passed', time: '5.1s' },
-                { name: 'Validation Error Display', status: 'passed', time: '2.3s' },
-                { name: 'Document Type Dropdown', status: 'healed', time: '4.1s' },
-                { name: 'updateCitizenDocument API', status: 'passed', time: '1.2s' },
-                { name: 'processWorkflow API', status: 'healed', time: '2.1s' },
-                { name: 'Authentication Flow', status: 'passed', time: '0.8s' },
-                { name: 'Document Status Check', status: 'failed', time: '1.5s' }
-            ]
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        const Dashboard = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [animatedValues, setAnimatedValues] = useState({});
+            
+            // Test data
+            const testData = {
+                repository: {
+                    name: "EGOV-RTS-NMC",
+                    totalFiles: "~200-300",
+                    totalLOC: "15-20K",
+                    languages: { Java: 65, JSP: 20, JavaScript: 10, CSS: 3, XML: 2 },
+                    frameworks: ["Spring 4.0.6", "Hibernate 4.3.6", "Apache Tiles 2.1.4"]
+                },
+                execution: {
+                    timestamp: "2025-05-28T07:48:00Z",
+                    duration: "45.3s",
+                    totalTests: 8,
+                    passed: 7,
+                    failed: 1,
+                    healed: 3,
+                    testReduction: 75
+                },
+                changes: [
+                    {
+                        file: "RTSservices/java/com/mars/service/",
+                        lines: [120, 145, 167],
+                        functions: ["updateCitizenDocument", "processWorkflow"],
+                        coverage: 100
+                    },
+                    {
+                        file: "RTSservices/web/pages/citizendocument/",
+                        lines: [45, 46, 47],
+                        functions: ["Form validation"],
+                        coverage: 100
+                    }
+                ],
+                selfHealing: [
+                    { time: "07:42:05", original: "#docNumber", healed: "input[name='documentNumber']", strategy: "tier-2" },
+                    { time: "07:42:16", original: "select#documentType", healed: "text-based search", strategy: "tier-4" },
+                    { time: "07:42:26", original: "/workflow/process", healed: "/workflow/execute", strategy: "endpoint-discovery" }
+                ],
+                browserResults: {
+                    chromium: { loadTime: 456, status: "passed", issues: [] },
+                    firefox: { loadTime: 489, status: "warning", issues: ["CSS rendering differences"] },
+                    webkit: { loadTime: 512, status: "warning", issues: ["jQuery compatibility"] }
+                },
+                issues: [
+                    { severity: "high", title: "Document status endpoint returning 404", location: "/citizen/document/status/{id}" },
+                    { severity: "medium", title: "jQuery compatibility in Safari", location: "All pages" },
+                    { severity: "medium", title: "Database pool exhaustion", location: "100+ concurrent users" }
+                ]
+            };
+            
+            // Animate numbers on mount
+            useEffect(() => {
+                const targets = {
+                    totalTests: testData.execution.totalTests,
+                    passed: testData.execution.passed,
+                    healed: testData.execution.healed,
+                    reduction: testData.execution.testReduction
+                };
+                
+                Object.keys(targets).forEach(key => {
+                    let current = 0;
+                    const target = targets[key];
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        setAnimatedValues(prev => ({ ...prev, [key]: Math.floor(current) }));
+                    }, 20);
+                });
+            }, []);
+            
+            const pieChartRef = useRef(null);
+            const barChartRef = useRef(null);
+            
+            useEffect(() => {
+                // Pie chart for test results
+                if (pieChartRef.current) {
+                    const ctx = pieChartRef.current.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Passed', 'Failed', 'Self-Healed'],
+                            datasets: [{
+                                data: [testData.execution.passed - testData.execution.healed, testData.execution.failed, testData.execution.healed],
+                                backgroundColor: ['#28a745', '#dc3545', '#17a2b8'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Bar chart for browser performance
+                if (barChartRef.current) {
+                    const ctx = barChartRef.current.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Chromium', 'Firefox', 'Safari'],
+                            datasets: [{
+                                label: 'Load Time (ms)',
+                                data: [456, 489, 512],
+                                backgroundColor: ['#667eea', '#764ba2', '#f093fb']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            }, [activeTab]);
+            
+            return (
+                <div className="dashboard">
+                    <div className="header">
+                        <h1>E2E Test Results Dashboard</h1>
+                        <p>EGOV-RTS-NMC • {new Date(testData.execution.timestamp).toLocaleString()}</p>
+                        <div className="repo-info">
+                            <div className="repo-stat">
+                                <svg className="icon" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                                <span>{animatedValues.reduction || 0}% Test Reduction</span>
+                            </div>
+                            <div className="repo-stat">
+                                <svg className="icon" viewBox="0 0 24 24">
+                                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                                </svg>
+                                <span>2 Files Changed</span>
+                            </div>
+                            <div className="repo-stat">
+                                <svg className="icon" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                                </svg>
+                                <span>45.3s Execution</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="metrics-grid">
+                        <div className="metric-card">
+                            <h3>Total Tests</h3>
+                            <div className="metric-value animated-number">{animatedValues.totalTests || 0}</div>
+                            <p>Focused on changes only</p>
+                        </div>
+                        <div className="metric-card">
+                            <h3>Success Rate</h3>
+                            <div className="metric-value success animated-number">
+                                {Math.floor(((animatedValues.passed || 0) / (animatedValues.totalTests || 1)) * 100)}%
+                            </div>
+                            <p>{animatedValues.passed || 0} of {animatedValues.totalTests || 0} passed</p>
+                        </div>
+                        <div className="metric-card">
+                            <h3>Self-Healed</h3>
+                            <div className="metric-value info animated-number">{animatedValues.healed || 0}</div>
+                            <p>Tests saved by healing</p>
+                        </div>
+                        <div className="metric-card">
+                            <h3>Critical Issues</h3>
+                            <div className="metric-value error">3</div>
+                            <p>Require attention</p>
+                        </div>
+                    </div>
+                    
+                    <div className="tabs">
+                        <button className={`tab ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
+                            Overview
+                        </button>
+                        <button className={`tab ${activeTab === 'changes' ? 'active' : ''}`} onClick={() => setActiveTab('changes')}>
+                            Changed Files
+                        </button>
+                        <button className={`tab ${activeTab === 'healing' ? 'active' : ''}`} onClick={() => setActiveTab('healing')}>
+                            Self-Healing
+                        </button>
+                        <button className={`tab ${activeTab === 'browsers' ? 'active' : ''}`} onClick={() => setActiveTab('browsers')}>
+                            Cross-Browser
+                        </button>
+                        <button className={`tab ${activeTab === 'issues' ? 'active' : ''}`} onClick={() => setActiveTab('issues')}>
+                            Issues
+                        </button>
+                    </div>
+                    
+                    {activeTab === 'overview' && (
+                        <div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                <div className="chart-container" style={{ height: '300px' }}>
+                                    <h3>Test Results Distribution</h3>
+                                    <canvas ref={pieChartRef} style={{ maxHeight: '250px' }}></canvas>
+                                </div>
+                                <div className="chart-container" style={{ height: '300px' }}>
+                                    <h3>Browser Performance</h3>
+                                    <canvas ref={barChartRef} style={{ maxHeight: '250px' }}></canvas>
+                                </div>
+                            </div>
+                            
+                            <div className="details-section">
+                                <h3>Repository Profile</h3>
+                                <table>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Files</td>
+                                        <td>{testData.repository.totalFiles}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lines of Code</td>
+                                        <td>{testData.repository.totalLOC}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Primary Language</td>
+                                        <td>Java ({testData.repository.languages.Java}%)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Frameworks</td>
+                                        <td>{testData.repository.frameworks.join(", ")}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {activeTab === 'changes' && (
+                        <div className="details-section">
+                            <h3>Changed Files Analysis</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Lines Modified</th>
+                                        <th>Functions</th>
+                                        <th>Coverage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {testData.changes.map((change, idx) => (
+                                        <tr key={idx} className="highlight-row">
+                                            <td><code>{change.file}</code></td>
+                                            <td>{change.lines.join(", ")}</td>
+                                            <td>{change.functions.join(", ")}</td>
+                                            <td><span className="status-badge passed">{change.coverage}%</span></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <p style={{ marginTop: '20px', color: '#666' }}>
+                                <strong>Efficiency:</strong> Testing only 2 changed files out of ~200-300 total files resulted in 75% test execution reduction.
+                            </p>
+                        </div>
+                    )}
+                    
+                    {activeTab === 'healing' && (
+                        <div className="details-section">
+                            <h3>Self-Healing Log</h3>
+                            <div className="timeline">
+                                {testData.selfHealing.map((heal, idx) => (
+                                    <div key={idx} className="timeline-item">
+                                        <strong>{heal.time}</strong>
+                                        <p>
+                                            Original: <code>{heal.original}</code> → 
+                                            Healed: <code>{heal.healed}</code>
+                                            <span className="healing-badge" style={{ marginLeft: '10px' }}>{heal.strategy}</span>
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={{ marginTop: '30px', padding: '20px', background: '#f6f8fa', borderRadius: '8px' }}>
+                                <h4>Healing Statistics</h4>
+                                <p>Success Rate: <strong>60%</strong> (3 of 5 attempts)</p>
+                                <p>Average Healing Time: <strong>1.3s</strong></p>
+                                <p>Most Effective Strategy: <strong>Tier-2 Selectors</strong></p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {activeTab === 'browsers' && (
+                        <div className="details-section">
+                            <h3>Cross-Browser Compatibility</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Browser</th>
+                                        <th>Load Time</th>
+                                        <th>Status</th>
+                                        <th>Issues</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Object.entries(testData.browserResults).map(([browser, data]) => (
+                                        <tr key={browser}>
+                                            <td style={{ textTransform: 'capitalize' }}>{browser}</td>
+                                            <td>{data.loadTime}ms</td>
+                                            <td>
+                                                <span className={`status-badge ${data.status}`}>
+                                                    {data.status}
+                                                </span>
+                                            </td>
+                                            <td>{data.issues.length > 0 ? data.issues.join(", ") : "None"}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    
+                    {activeTab === 'issues' && (
+                        <div className="details-section">
+                            <h3>Critical Issues</h3>
+                            {testData.issues.map((issue, idx) => (
+                                <div key={idx} style={{ 
+                                    padding: '15px', 
+                                    marginBottom: '10px', 
+                                    border: '1px solid #e1e4e8',
+                                    borderLeft: `4px solid ${issue.severity === 'high' ? '#dc3545' : '#ffc107'}`,
+                                    borderRadius: '4px'
+                                }}>
+                                    <h4 style={{ color: issue.severity === 'high' ? '#dc3545' : '#ffc107' }}>
+                                        {issue.title}
+                                    </h4>
+                                    <p>Location: <code>{issue.location}</code></p>
+                                    <p>Severity: <strong>{issue.severity.toUpperCase()}</strong></p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
         };
         
-        // Initialize charts
-        function initCharts() {
-            // Test Summary Chart
-            const summaryCtx = document.getElementById('testSummaryChart').getContext('2d');
-            new Chart(summaryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Passed', 'Failed', 'Self-Healed'],
-                    datasets: [{
-                        data: [testData.summary.passed, testData.summary.failed, testData.summary.healed],
-                        backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-            
-            // Language Distribution
-            const langCtx = document.getElementById('languageChart').getContext('2d');
-            new Chart(langCtx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(testData.languages),
-                    datasets: [{
-                        data: Object.values(testData.languages),
-                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Language Distribution'
-                        }
-                    }
-                }
-            });
-            
-            // Framework Chart
-            const frameworkCtx = document.getElementById('frameworkChart').getContext('2d');
-            new Chart(frameworkCtx, {
-                type: 'bar',
-                data: {
-                    labels: testData.frameworks,
-                    datasets: [{
-                        label: 'Technology Stack',
-                        data: [100, 100, 100, 100],
-                        backgroundColor: 'rgba(102, 126, 234, 0.5)',
-                        borderColor: 'rgba(102, 126, 234, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            display: false
-                        }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Technology Stack'
-                        },
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Initialize browser performance chart
-        function initBrowserPerfChart() {
-            const ctx = document.getElementById('browserPerfChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(testData.browserPerf),
-                    datasets: [{
-                        label: 'Load Time (ms)',
-                        data: Object.values(testData.browserPerf),
-                        backgroundColor: ['#667eea', '#764ba2', '#f093fb']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Initialize load test chart
-        function initLoadTestChart() {
-            const ctx = document.getElementById('loadTestChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: testData.loadTest.users.map(u => u + ' users'),
-                    datasets: [{
-                        label: 'Response Time (ms)',
-                        data: testData.loadTest.responseTime,
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4
-                    }, {
-                        label: 'Errors',
-                        data: testData.loadTest.errors,
-                        borderColor: '#dc3545',
-                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                        tension: 0.4,
-                        yAxisID: 'y1'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            position: 'left'
-                        },
-                        y1: {
-                            beginAtZero: true,
-                            position: 'right',
-                            grid: {
-                                drawOnChartArea: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Initialize component test chart
-        function initComponentTestChart() {
-            const ctx = document.getElementById('componentTestChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['UI Tests', 'API Tests', 'Integration', 'Performance', 'Security'],
-                    datasets: [{
-                        label: 'Test Coverage',
-                        data: [100, 87.5, 80, 75, 60],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.2)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Initialize healing chart
-        function initHealingChart() {
-            const ctx = document.getElementById('healingChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Selector Fallback', 'Endpoint Discovery', 'Text Matching', 'AI Detection'],
-                    datasets: [{
-                        label: 'Successful Healings',
-                        data: [2, 1, 1, 0],
-                        backgroundColor: '#ffc107'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Initialize heatmap
-        function initHeatmap() {
-            const width = 800;
-            const height = 400;
-            const margin = { top: 20, right: 20, bottom: 30, left: 200 };
-            
-            const data = [
-                { file: 'RTSservices/java/com/mars/service/', changes: 3, coverage: 100 },
-                { file: 'RTSservices/web/pages/citizendocument/', changes: 3, coverage: 100 },
-                { file: 'Other files (unchanged)', changes: 0, coverage: 0 }
-            ];
-            
-            const svg = d3.select('#heatmap')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height);
-            
-            const colorScale = d3.scaleSequential()
-                .interpolator(d3.interpolateRdYlGn)
-                .domain([0, 100]);
-            
-            const g = svg.append('g')
-                .attr('transform', `translate(${margin.left},${margin.top})`);
-            
-            const y = d3.scaleBand()
-                .range([0, height - margin.top - margin.bottom])
-                .domain(data.map(d => d.file))
-                .padding(0.1);
-            
-            const x = d3.scaleLinear()
-                .range([0, width - margin.left - margin.right])
-                .domain([0, 100]);
-            
-            g.selectAll('.bar')
-                .data(data)
-                .enter().append('rect')
-                .attr('y', d => y(d.file))
-                .attr('height', y.bandwidth())
-                .attr('x', 0)
-                .attr('width', d => x(d.coverage))
-                .attr('fill', d => colorScale(d.coverage))
-                .on('mouseover', function(event, d) {
-                    const tooltip = document.getElementById('tooltip');
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = event.pageX + 10 + 'px';
-                    tooltip.style.top = event.pageY - 10 + 'px';
-                    tooltip.innerHTML = `Coverage: ${d.coverage}%<br>Changes: ${d.changes}`;
-                })
-                .on('mouseout', function() {
-                    document.getElementById('tooltip').style.display = 'none';
-                });
-            
-            g.append('g')
-                .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
-                .call(d3.axisBottom(x).ticks(5).tickFormat(d => d + '%'));
-            
-            g.append('g')
-                .call(d3.axisLeft(y));
-        }
-        
-        // Initialize test results list
-        function initTestResultsList() {
-            const list = document.getElementById('testResultsList');
-            testData.tests.forEach(test => {
-                const item = document.createElement('div');
-                item.className = 'test-item';
-                item.innerHTML = `
-                    <div>
-                        <strong>${test.name}</strong>
-                        <div style="color: #666; font-size: 0.9em;">Execution time: ${test.time}</div>
-                    </div>
-                    <span class="status-badge status-${test.status}">${test.status}</span>
-                `;
-                list.appendChild(item);
-            });
-        }
-        
-        // Tab switching
-        function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-            
-            // Initialize charts when tabs are shown
-            if (tabName === 'performance' && !document.getElementById('browserPerfChart').chart) {
-                initBrowserPerfChart();
-                initLoadTestChart();
-            } else if (tabName === 'tests' && !document.getElementById('componentTestChart').chart) {
-                initComponentTestChart();
-                initTestResultsList();
-            } else if (tabName === 'healing' && !document.getElementById('healingChart').chart) {
-                initHealingChart();
-            } else if (tabName === 'changes' && !document.querySelector('#heatmap svg')) {
-                initHeatmap();
-            }
-        }
-        
-        // Export report
-        function exportReport() {
-            alert('Report exported! Check the GitHub repository for downloadable results.');
-        }
-        
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            initCharts();
-            
-            // Animate progress bars
-            setTimeout(() => {
-                document.querySelectorAll('.progress-fill').forEach(bar => {
-                    bar.style.width = bar.getAttribute('data-progress') + '%';
-                });
-            }, 100);
-        });
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
     </script>
 </body>
 </html>
