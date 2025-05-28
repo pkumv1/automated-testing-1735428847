@@ -2,7 +2,7 @@
 
 ## 🚀 Interactive Dashboard
 
-**[View Live Dashboard →](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/interactive-dashboard.html)**
+**[View Live Dashboard →](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)**
 
 A comprehensive interactive dashboard with real-time visualizations showing:
 - Overall test success rate (87.5%)
@@ -36,19 +36,18 @@ npm run test:api   # API tests only
 ## Test Results
 
 **Results Location:** [`/test-results/`](./test-results/)
-- 🎨 **Interactive Dashboard:** [`/test-results/interactive-dashboard.html`](./test-results/interactive-dashboard.html) - [View Live](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/interactive-dashboard.html)
+- 🎨 **Interactive Dashboard:** [`/test-results/dashboard.html`](./test-results/dashboard.html) - [View Live](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)
 - 📄 HTML Report: [`/test-results/index.html`](./test-results/index.html)
 - 📊 Summary: [`/test-results/SUMMARY.md`](./test-results/SUMMARY.md)
 
 ## Dashboard Features
 
-The interactive dashboard includes 6 tabs with all data points:
+The interactive dashboard includes 5 tabs with comprehensive data:
 - **Overview**: Repository composition, test execution metrics, language distribution
-- **Changes Detected**: Detailed file modifications with line numbers and functions
-- **Self-Healing**: Strategy effectiveness, healing timeline, selector reliability metrics
-- **Browser Tests**: Cross-browser compatibility matrix and load time comparisons
-- **Performance**: Load test results with response time charts
-- **Issues**: Critical findings with recommendations
+- **Change Analysis**: File change heatmap with coverage visualization
+- **Test Results**: Component-wise test coverage radar chart and detailed results
+- **Performance**: Browser performance comparison and load test metrics
+- **Self-Healing**: Success rate visualization and healing strategies breakdown
 
 ## Change Summary
 
@@ -92,7 +91,7 @@ This project implements:
 │   ├── change-aware-tests.js
 │   └── advanced-tests.js
 ├── test-results/        # Test execution results
-│   ├── interactive-dashboard.html   # Interactive dashboard with Chart.js
+│   ├── dashboard.html   # Interactive dashboard with Chart.js & D3.js
 │   ├── index.html       # White-background report
 │   └── *.json          # Detailed metrics
 └── package.json        # Dependencies
@@ -104,8 +103,8 @@ This project implements:
 - Self-healing selectors (6-tier strategy)
 - Change detection analysis
 - Framework-aware testing (Spring/JSP specific)
-- Chart.js for interactive visualizations
+- Chart.js & D3.js for interactive visualizations
 
 ---
 
-Generated: 2025-05-28 | [View Interactive Dashboard](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/interactive-dashboard.html)
+Generated: 2025-05-28 | [View Interactive Dashboard](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)
