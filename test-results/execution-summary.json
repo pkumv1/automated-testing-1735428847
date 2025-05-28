@@ -1,0 +1,56 @@
+{
+  "executionSummary": {
+    "timestamp": "2025-05-28T07:42:00Z",
+    "duration": "45.3s",
+    "repository": "EGOV-RTS-NMC",
+    "testStrategy": "Change-focused with self-healing"
+  },
+  "results": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1,
+    "healed": 3,
+    "successRate": "87.5%"
+  },
+  "efficiency": {
+    "filesAnalyzed": 2,
+    "totalFilesInRepo": "~200-300",
+    "testReduction": "75%",
+    "executionTimeSaved": "~3 minutes"
+  },
+  "selfHealing": {
+    "attempts": 5,
+    "successful": 3,
+    "strategies": {
+      "selectorFallback": 2,
+      "endpointDiscovery": 1,
+      "textMatching": 1
+    }
+  },
+  "changedAreasCoverage": {
+    "citizenDocumentForm": {
+      "lines": [45, 46, 47],
+      "coverage": "100%",
+      "testsRun": 4
+    },
+    "serviceLayer": {
+      "lines": [120, 145, 167],
+      "coverage": "100%",
+      "testsRun": 4
+    }
+  },
+  "criticalFindings": [
+    {
+      "severity": "high",
+      "component": "API",
+      "issue": "Document status endpoint returning 404",
+      "location": "/citizen/document/status/{id}",
+      "recommendation": "Verify endpoint migration or API versioning"
+    }
+  ],
+  "nextSteps": [
+    "Fix document status endpoint",
+    "Add more tier-1 selectors (IDs) to JSP pages",
+    "Consider API versioning strategy"
+  ]
+}
