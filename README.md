@@ -1,5 +1,17 @@
 # Automated E2E Testing with Self-Healing - EGOV-RTS-NMC
 
+## 🚀 Interactive Dashboard
+
+**[View Interactive Dashboard →](./test-results/dashboard.html)**
+
+A colorful, interactive dashboard with real-time visualizations showing:
+- Overall test success rate (87.5%)
+- Self-healing performance metrics
+- Cross-browser compatibility results
+- Load testing analysis
+- Repository language distribution
+- Timeline of test execution
+
 ## Repository Overview
 
 **Target Repository:** EGOV-RTS-NMC (E-Government Real Time Services)
@@ -24,8 +36,9 @@ npm run test:api   # API tests only
 ## Test Results
 
 **Results Location:** [`/test-results/`](./test-results/)
-- HTML Report: [`/test-results/index.html`](./test-results/index.html)
-- Summary: [`/test-results/SUMMARY.md`](./test-results/SUMMARY.md)
+- 🎨 **Interactive Dashboard:** [`/test-results/dashboard.html`](./test-results/dashboard.html)
+- 📄 HTML Report: [`/test-results/index.html`](./test-results/index.html)
+- 📊 Summary: [`/test-results/SUMMARY.md`](./test-results/SUMMARY.md)
 
 ## Change Summary
 
@@ -68,6 +81,7 @@ This project implements:
 │   ├── change-aware-tests.js
 │   └── advanced-tests.js
 ├── test-results/        # Test execution results
+│   ├── dashboard.html   # Interactive dashboard
 │   ├── index.html       # White-background report
 │   └── *.json          # Detailed metrics
 └── package.json        # Dependencies
@@ -79,7 +93,8 @@ This project implements:
 - Self-healing selectors (6-tier strategy)
 - Change detection analysis
 - Framework-aware testing (Spring/JSP specific)
+- Chart.js & D3.js for visualizations
 
 ---
 
-Generated: 2025-05-28 | [View Full Report](./test-results/index.html)
+Generated: 2025-05-28 | [View Interactive Dashboard](./test-results/dashboard.html)
