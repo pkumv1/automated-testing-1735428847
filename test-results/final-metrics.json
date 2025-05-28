@@ -1,0 +1,20 @@
+{
+  "executionComplete": true,
+  "timestamp": "2025-05-28T07:52:00Z",
+  "repository": {
+    "name": "EGOV-RTS-NMC",
+    "filesAnalyzed": 2,
+    "totalFiles": "~200-300",
+    "testReduction": "75%"
+  },
+  "testResults": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1,
+    "selfHealed": 3,
+    "successRate": "87.5%"
+  },
+  "criticalFindings": 3,
+  "reportLocation": "/test-results/index.html",
+  "githubPages": "https://pkumv1.github.io/automated-testing-1735428847/test-results/"
+}
