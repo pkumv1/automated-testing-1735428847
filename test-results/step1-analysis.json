@@ -1,0 +1,24 @@
+{
+  "step": 1,
+  "timestamp": "2025-05-28T07:34:00Z",
+  "repository": {
+    "name": "EGOV-RTS-NMC",
+    "type": "Java Enterprise Application",
+    "description": "E-Government Real Time Services - NMC"
+  },
+  "metrics": {
+    "estimatedLOC": "15,000-20,000",
+    "fileCount": "200-300",
+    "primaryLanguage": "Java",
+    "frameworks": ["Spring 4.0.6", "Hibernate 4.3.6", "Apache Tiles 2.1.4"]
+  },
+  "changes": {
+    "lastCommit": "Code version -updation",
+    "filesModified": 2,
+    "areasAffected": ["Service layer", "UI forms"]
+  },
+  "testStrategy": {
+    "focusAreas": ["Authentication", "Citizen documents", "Workflow"],
+    "reducedTestScope": "60-80% reduction by targeting only changed files"
+  }
+}
