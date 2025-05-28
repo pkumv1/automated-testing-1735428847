@@ -2,7 +2,7 @@
 
 ## 🚀 Interactive Dashboard
 
-**[View Interactive Dashboard →](./test-results/dashboard.html)**
+**[View Live Dashboard →](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)**
 
 A colorful, interactive dashboard with real-time visualizations showing:
 - Overall test success rate (87.5%)
@@ -36,9 +36,19 @@ npm run test:api   # API tests only
 ## Test Results
 
 **Results Location:** [`/test-results/`](./test-results/)
-- 🎨 **Interactive Dashboard:** [`/test-results/dashboard.html`](./test-results/dashboard.html)
+- 🎨 **Interactive Dashboard:** [`/test-results/dashboard.html`](./test-results/dashboard.html) - [View Live](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)
 - 📄 HTML Report: [`/test-results/index.html`](./test-results/index.html)
 - 📊 Summary: [`/test-results/SUMMARY.md`](./test-results/SUMMARY.md)
+
+## Dashboard Features
+
+The interactive dashboard includes 6 tabs:
+- **Overview**: Repository composition & execution metrics
+- **Test Results**: Component-wise test status with visual breakdowns
+- **Self-Healing**: Strategy effectiveness and tier performance analysis
+- **Change Detection**: Visual heatmap of tested vs skipped files
+- **Cross-Browser**: Compatibility matrix and load time comparisons
+- **Performance**: Load test results and response time distribution
 
 ## Change Summary
 
@@ -81,7 +91,7 @@ This project implements:
 │   ├── change-aware-tests.js
 │   └── advanced-tests.js
 ├── test-results/        # Test execution results
-│   ├── dashboard.html   # Interactive dashboard
+│   ├── dashboard.html   # Interactive dashboard with Chart.js
 │   ├── index.html       # White-background report
 │   └── *.json          # Detailed metrics
 └── package.json        # Dependencies
@@ -93,8 +103,8 @@ This project implements:
 - Self-healing selectors (6-tier strategy)
 - Change detection analysis
 - Framework-aware testing (Spring/JSP specific)
-- Chart.js & D3.js for visualizations
+- Chart.js for interactive visualizations
 
 ---
 
-Generated: 2025-05-28 | [View Interactive Dashboard](./test-results/dashboard.html)
+Generated: 2025-05-28 | [View Interactive Dashboard](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)
