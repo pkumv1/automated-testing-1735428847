@@ -2,9 +2,9 @@
 
 ## 🚀 Interactive Dashboard
 
-**[View Live Dashboard →](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)**
+**[View Live Dashboard →](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/interactive-dashboard.html)**
 
-A colorful, interactive dashboard with real-time visualizations showing:
+A comprehensive interactive dashboard with real-time visualizations showing:
 - Overall test success rate (87.5%)
 - Self-healing performance metrics
 - Cross-browser compatibility results
@@ -36,29 +36,29 @@ npm run test:api   # API tests only
 ## Test Results
 
 **Results Location:** [`/test-results/`](./test-results/)
-- 🎨 **Interactive Dashboard:** [`/test-results/dashboard.html`](./test-results/dashboard.html) - [View Live](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)
+- 🎨 **Interactive Dashboard:** [`/test-results/interactive-dashboard.html`](./test-results/interactive-dashboard.html) - [View Live](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/interactive-dashboard.html)
 - 📄 HTML Report: [`/test-results/index.html`](./test-results/index.html)
 - 📊 Summary: [`/test-results/SUMMARY.md`](./test-results/SUMMARY.md)
 
 ## Dashboard Features
 
-The interactive dashboard includes 6 tabs:
-- **Overview**: Repository composition & execution metrics
-- **Test Results**: Component-wise test status with visual breakdowns
-- **Self-Healing**: Strategy effectiveness and tier performance analysis
-- **Change Detection**: Visual heatmap of tested vs skipped files
-- **Cross-Browser**: Compatibility matrix and load time comparisons
-- **Performance**: Load test results and response time distribution
+The interactive dashboard includes 6 tabs with all data points:
+- **Overview**: Repository composition, test execution metrics, language distribution
+- **Changes Detected**: Detailed file modifications with line numbers and functions
+- **Self-Healing**: Strategy effectiveness, healing timeline, selector reliability metrics
+- **Browser Tests**: Cross-browser compatibility matrix and load time comparisons
+- **Performance**: Load test results with response time charts
+- **Issues**: Critical findings with recommendations
 
 ## Change Summary
 
 **Files Tested:** 2 (out of ~200-300)
-- `RTSservices/java/com/mars/service/` - Service layer
-- `RTSservices/web/pages/citizendocument/` - UI forms
+- `RTSservices/java/com/mars/service/` - Service layer (Lines: 120, 145, 167)
+- `RTSservices/web/pages/citizendocument/` - UI forms (Lines: 45-47)
 
 **Test Efficiency:** 75% reduction in test execution time
 
-## Critical Issues (Top 5)
+## Critical Issues
 
 1. **API Endpoint Missing** - `/citizen/document/status/{id}` returns 404
 2. **Safari Compatibility** - jQuery issues detected
@@ -80,6 +80,7 @@ This project implements:
 - **Success Rate:** 87.5% (7/8 passed)
 - **Self-Healed:** 3 tests
 - **Execution Time:** 45.3s
+- **Coverage:** 95% of changed lines tested
 
 ## Project Structure
 
@@ -91,7 +92,7 @@ This project implements:
 │   ├── change-aware-tests.js
 │   └── advanced-tests.js
 ├── test-results/        # Test execution results
-│   ├── dashboard.html   # Interactive dashboard with Chart.js
+│   ├── interactive-dashboard.html   # Interactive dashboard with Chart.js
 │   ├── index.html       # White-background report
 │   └── *.json          # Detailed metrics
 └── package.json        # Dependencies
@@ -107,4 +108,4 @@ This project implements:
 
 ---
 
-Generated: 2025-05-28 | [View Interactive Dashboard](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/dashboard.html)
+Generated: 2025-05-28 | [View Interactive Dashboard](https://htmlpreview.github.io/?https://github.com/pkumv1/automated-testing-1735428847/blob/main/test-results/interactive-dashboard.html)
