@@ -1,0 +1,26 @@
+{
+  "name": "automated-testing-egov-rts",
+  "version": "1.0.0",
+  "description": "Self-healing E2E tests for EGOV-RTS-NMC",
+  "main": "test-scripts/change-aware-tests.js",
+  "scripts": {
+    "test": "node test-scripts/run-tests.js",
+    "test:ui": "node test-scripts/run-tests.js --ui-only",
+    "test:api": "node test-scripts/run-tests.js --api-only",
+    "install-browsers": "npx playwright install"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "e2e-testing",
+    "self-healing",
+    "change-detection",
+    "spring-mvc",
+    "jsp"
+  ]
+}
