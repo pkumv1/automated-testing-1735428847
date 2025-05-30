@@ -3,603 +3,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E2E Test Results Dashboard - EGOV-RTS-NMC</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <title>E2E Test Dashboard - EGOV-RTS-NMC</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: white;
-            color: #333;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #333;
             line-height: 1.6;
         }
-        
-        .container {
+        .dashboard {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
-        
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px 0;
-            margin: -20px -20px 30px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
-        
         .metric-card {
             background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            cursor: pointer;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
         .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
-        
         .metric-value {
             font-size: 2.5em;
             font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
         .metric-label {
             color: #666;
             font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 5px;
         }
-        
-        .section {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .section h2 {
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-        
         .chart-container {
-            position: relative;
-            height: 300px;
-            margin: 20px 0;
-        }
-        
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .table th, .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        
-        .status-passed {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-failed {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .status-healed {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .tab-container {
-            display: flex;
-            gap: 10px;
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 20px;
             margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        
+        .chart-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .success { color: #27ae60; }
+        .warning { color: #f39c12; }
+        .error { color: #e74c3c; }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e1e4e8;
+            margin-bottom: 20px;
+        }
         .tab {
             padding: 10px 20px;
-            background: none;
-            border: none;
             cursor: pointer;
+            border: none;
+            background: none;
             font-size: 1em;
             color: #666;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
+            transition: all 0.3s;
         }
-        
-        .tab:hover {
-            color: #667eea;
-        }
-        
         .tab.active {
             color: #667eea;
-            border-bottom-color: #667eea;
-            font-weight: 600;
+            border-bottom: 3px solid #667eea;
         }
-        
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: #e0e0e0;
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .heatmap-cell {
+            padding: 15px;
+            text-align: center;
             border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            cursor: pointer;
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.5s ease;
+        .heatmap-cell:hover {
+            transform: scale(1.05);
         }
-        
+        .changed { background: #ffcdd2; color: #c62828; }
+        .unchanged { background: #e8f5e9; color: #2e7d32; }
+        .healing-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .timeline-marker {
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            flex: 1;
+        }
         .issue-card {
             background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
+            border-left: 4px solid #f39c12;
             padding: 15px;
-            margin: 10px 0;
+            margin-bottom: 15px;
+            border-radius: 5px;
         }
-        
-        .issue-card h4 {
-            color: #856404;
-            margin-bottom: 5px;
+        .recommendation {
+            background: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
         }
-        
-        .interactive-element {
-            animation: pulse 2s infinite;
-        }
-        
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-        
-        .footer {
-            text-align: center;
-            padding: 40px 0;
-            color: #666;
-            border-top: 1px solid #e0e0e0;
-            margin-top: 50px;
+        .pulse {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>E2E Test Results Dashboard</h1>
-        <p>EGOV-RTS-NMC | Self-Healing Test Framework</p>
-    </div>
+    <div class="dashboard">
+        <div class="header">
+            <h1>E2E Test Dashboard - EGOV-RTS-NMC</h1>
+            <p>Real-time test results with self-healing capabilities</p>
+            <p style="margin-top: 10px; opacity: 0.9;">Last Updated: <span id="timestamp">2025-05-28T07:58:00Z</span></p>
+        </div>
 
-    <div class="container" x-data="dashboard()">
-        <!-- Key Metrics -->
         <div class="metrics-grid">
-            <div class="metric-card interactive-element" @click="showDetails('tests')">
-                <div class="metric-label">Total Tests</div>
-                <div class="metric-value">8</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 87.5%"></div>
-                </div>
-                <small>87.5% Success Rate</small>
+            <div class="metric-card pulse">
+                <div class="metric-value">87.5%</div>
+                <div class="metric-label">Success Rate</div>
             </div>
-            
-            <div class="metric-card" @click="showDetails('healing')">
-                <div class="metric-label">Self-Healed</div>
-                <div class="metric-value">3</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 60%"></div>
-                </div>
-                <small>60% Healing Success</small>
-            </div>
-            
-            <div class="metric-card" @click="showDetails('efficiency')">
-                <div class="metric-label">Test Reduction</div>
+            <div class="metric-card">
                 <div class="metric-value">75%</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 75%"></div>
-                </div>
-                <small>2 of ~200 files tested</small>
+                <div class="metric-label">Test Reduction</div>
             </div>
-            
-            <div class="metric-card" @click="showDetails('time')">
-                <div class="metric-label">Execution Time</div>
+            <div class="metric-card">
+                <div class="metric-value">3</div>
+                <div class="metric-label">Self-Healed Tests</div>
+            </div>
+            <div class="metric-card">
                 <div class="metric-value">45.3s</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 25%"></div>
-                </div>
-                <small>vs ~3min full suite</small>
+                <div class="metric-label">Execution Time</div>
             </div>
         </div>
 
-        <!-- Repository Overview -->
-        <div class="section">
-            <h2>Repository Analysis</h2>
-            <div class="tab-container">
-                <button class="tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">Overview</button>
-                <button class="tab" :class="{ active: activeTab === 'tech' }" @click="activeTab = 'tech'">Tech Stack</button>
-                <button class="tab" :class="{ active: activeTab === 'changes' }" @click="activeTab = 'changes'">Changes</button>
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">Overview</button>
+            <button class="tab" onclick="showTab('changes')">Change Detection</button>
+            <button class="tab" onclick="showTab('healing')">Self-Healing</button>
+            <button class="tab" onclick="showTab('performance')">Performance</button>
+            <button class="tab" onclick="showTab('issues')">Issues & Actions</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="chart-container">
+                <h3 class="chart-title">Repository Analysis</h3>
+                <canvas id="repoChart" width="400" height="200"></canvas>
             </div>
             
-            <div x-show="activeTab === 'overview'">
-                <div class="chart-container">
-                    <canvas id="languageChart"></canvas>
-                </div>
-                <p><strong>Repository:</strong> EGOV-RTS-NMC (E-Government Real Time Services)</p>
-                <p><strong>Size:</strong> ~3-5 MB | <strong>Files:</strong> ~200-300 | <strong>LOC:</strong> ~15-20K</p>
+            <div class="chart-container">
+                <h3 class="chart-title">Test Results Overview</h3>
+                <canvas id="resultsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div id="changes" class="tab-content">
+            <div class="chart-container">
+                <h3 class="chart-title">Change Detection Heatmap</h3>
+                <p style="margin-bottom: 10px;">Files tested: 2 out of ~200-300</p>
+                <div class="heatmap" id="heatmap"></div>
             </div>
             
-            <div x-show="activeTab === 'tech'" style="display: none">
-                <h3>Frameworks & Libraries</h3>
+            <div class="chart-container">
+                <h3 class="chart-title">Changed Functions</h3>
                 <ul style="list-style: none; padding: 0;">
-                    <li>✓ Spring Framework 4.0.6</li>
-                    <li>✓ Hibernate 4.3.6</li>
-                    <li>✓ Apache Tiles 2.1.4</li>
-                    <li>✓ Spring Security 4.0.6</li>
-                    <li>✓ Maven 3.2 & Ant</li>
-                </ul>
-            </div>
-            
-            <div x-show="activeTab === 'changes'" style="display: none">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>File</th>
-                            <th>Lines Changed</th>
-                            <th>Functions</th>
-                            <th>Coverage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>RTSservices/java/com/mars/service/</td>
-                            <td>120, 145, 167</td>
-                            <td>updateCitizenDocument, processWorkflow</td>
-                            <td><span class="status-badge status-passed">100%</span></td>
-                        </tr>
-                        <tr>
-                            <td>RTSservices/web/pages/citizendocument/</td>
-                            <td>45-47</td>
-                            <td>Form validation</td>
-                            <td><span class="status-badge status-passed">100%</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Test Results -->
-        <div class="section">
-            <h2>Test Execution Results</h2>
-            <div class="chart-container">
-                <canvas id="testResultsChart"></canvas>
-            </div>
-            
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Test Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Time</th>
-                        <th>Healing</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Form Validation - New Rules</td>
-                        <td>UI</td>
-                        <td><span class="status-badge status-healed">Healed</span></td>
-                        <td>3.2s</td>
-                        <td>Selector: #docNumber → input[name='documentNumber']</td>
-                    </tr>
-                    <tr>
-                        <td>Form Submission</td>
-                        <td>UI</td>
-                        <td><span class="status-badge status-passed">Passed</span></td>
-                        <td>5.1s</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>updateCitizenDocument API</td>
-                        <td>API</td>
-                        <td><span class="status-badge status-passed">Passed</span></td>
-                        <td>1.2s</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>processWorkflow API</td>
-                        <td>API</td>
-                        <td><span class="status-badge status-healed">Healed</span></td>
-                        <td>2.1s</td>
-                        <td>Endpoint: /workflow/process → /workflow/execute</td>
-                    </tr>
-                    <tr>
-                        <td>Document Status Check</td>
-                        <td>API</td>
-                        <td><span class="status-badge status-failed">Failed</span></td>
-                        <td>1.5s</td>
-                        <td>No alternatives found</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Self-Healing Statistics -->
-        <div class="section">
-            <h2>Self-Healing Performance</h2>
-            <div class="chart-container">
-                <canvas id="healingChart"></canvas>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
-                <div>
-                    <h4>Healing Strategies Used</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li>🔧 Selector Fallback: 2</li>
-                        <li>🔍 Endpoint Discovery: 1</li>
-                        <li>📝 Text Matching: 1</li>
-                        <li>🤖 AI Detection: 0</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Selector Tier Effectiveness</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li>Tier 1 (ID): 40%</li>
-                        <li>Tier 2 (Name): 85%</li>
-                        <li>Tier 3 (ARIA): 60%</li>
-                        <li>Tier 4 (Text): 95%</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cross-Browser Results -->
-        <div class="section">
-            <h2>Cross-Browser Compatibility</h2>
-            <div class="chart-container">
-                <canvas id="browserChart"></canvas>
-            </div>
-            
-            <div class="issue-card">
-                <h4>⚠️ Browser-Specific Issues</h4>
-                <ul>
-                    <li><strong>Safari:</strong> jQuery compatibility issues detected</li>
-                    <li><strong>Firefox:</strong> Minor CSS rendering differences</li>
+                    <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px;">
+                        <strong>updateCitizenDocument()</strong> - Line 120 - <span class="success">✓ Tested</span>
+                    </li>
+                    <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px;">
+                        <strong>processWorkflow()</strong> - Lines 145, 167 - <span class="warning">✓ Healed</span>
+                    </li>
+                    <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px;">
+                        <strong>Form Validation</strong> - Lines 45-47 - <span class="warning">✓ Healed</span>
+                    </li>
                 </ul>
             </div>
         </div>
 
-        <!-- Performance Metrics -->
-        <div class="section">
-            <h2>Performance Analysis</h2>
+        <div id="healing" class="tab-content">
             <div class="chart-container">
-                <canvas id="performanceChart"></canvas>
+                <h3 class="chart-title">Self-Healing Success Rate</h3>
+                <canvas id="healingChart" width="400" height="200"></canvas>
             </div>
             
-            <div class="issue-card">
-                <h4>🚨 Performance Bottleneck</h4>
-                <p><strong>Issue:</strong> Database connection pool exhaustion at 100 concurrent users</p>
-                <p><strong>Current Limit:</strong> 50 concurrent users</p>
-                <p><strong>Recommendation:</strong> Increase pool size from 50 to 150 connections</p>
+            <div class="chart-container">
+                <h3 class="chart-title">Healing Timeline</h3>
+                <div class="healing-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <strong>07:42:05</strong> - Selector healing: #docNumber → input[name='documentNumber']
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <strong>07:42:16</strong> - Text-based search for Document Type dropdown
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <strong>07:42:26</strong> - API endpoint discovery: /workflow/process → /workflow/execute
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Critical Issues -->
-        <div class="section">
-            <h2>Critical Issues Requiring Action</h2>
-            <div class="issue-card" style="background: #f8d7da; border-color: #f5c6cb;">
-                <h4 style="color: #721c24;">1. API Endpoint Missing (High Priority)</h4>
-                <p><strong>Endpoint:</strong> /citizen/document/status/{id}</p>
-                <p><strong>Error:</strong> 404 Not Found</p>
-                <p><strong>Impact:</strong> Document status checks failing</p>
-                <p><strong>Action:</strong> Verify endpoint migration or implement missing endpoint</p>
+        <div id="performance" class="tab-content">
+            <div class="chart-container">
+                <h3 class="chart-title">Cross-Browser Performance</h3>
+                <canvas id="browserChart" width="400" height="200"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="chart-title">Load Test Results</h3>
+                <canvas id="loadChart" width="400" height="200"></canvas>
             </div>
         </div>
-    </div>
 
-    <div class="footer">
-        <p>Generated: 2025-05-28 | <a href="https://github.com/pkumv1/automated-testing-1735428847" style="color: #667eea;">View on GitHub</a></p>
+        <div id="issues" class="tab-content">
+            <div class="chart-container">
+                <h3 class="chart-title">Critical Issues</h3>
+                <div class="issue-card">
+                    <strong>🔴 High Priority:</strong> Document status endpoint missing
+                    <p>Location: /citizen/document/status/{id}</p>
+                    <p>Impact: Status checks failing (404 errors)</p>
+                </div>
+                <div class="issue-card">
+                    <strong>🟡 Medium Priority:</strong> Safari jQuery compatibility
+                    <p>Browser: Safari/WebKit</p>
+                    <p>Impact: Some form interactions may fail</p>
+                </div>
+                <div class="issue-card">
+                    <strong>🟡 Medium Priority:</strong> Database connection pool limit
+                    <p>Threshold: 100 concurrent users</p>
+                    <p>Current limit: 50 connections</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="chart-title">Recommended Actions</h3>
+                <div class="recommendation">
+                    <strong>1. Immediate:</strong> Implement missing /citizen/document/status/{id} endpoint
+                </div>
+                <div class="recommendation">
+                    <strong>2. Short-term:</strong> Add jQuery polyfill for Safari compatibility
+                </div>
+                <div class="recommendation">
+                    <strong>3. Performance:</strong> Increase DB pool size from 50 to 150
+                </div>
+                <div class="recommendation">
+                    <strong>4. Future:</strong> Add more ID attributes to JSP elements for better selector reliability
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Alpine.js component
-        function dashboard() {
-            return {
-                activeTab: 'overview',
-                showDetails(type) {
-                    console.log('Showing details for:', type);
-                }
-            }
+        // Tab functionality
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
         }
 
-        // Initialize charts when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Language Distribution Chart
-            const languageCtx = document.getElementById('languageChart').getContext('2d');
-            new Chart(languageCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Java', 'JSP', 'JavaScript', 'CSS', 'XML'],
-                    datasets: [{
-                        data: [65, 20, 10, 3, 2],
-                        backgroundColor: [
-                            '#667eea',
-                            '#764ba2',
-                            '#f093fb',
-                            '#4facfe',
-                            '#43e97b'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right'
-                        }
+        // Repository Analysis Chart
+        const repoCtx = document.getElementById('repoChart').getContext('2d');
+        new Chart(repoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Java', 'JSP', 'JavaScript', 'CSS', 'XML'],
+                datasets: [{
+                    data: [65, 20, 10, 3, 2],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // Test Results Chart
+        const resultsCtx = document.getElementById('resultsChart').getContext('2d');
+        new Chart(resultsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Total', 'Passed', 'Failed', 'Self-Healed'],
+                datasets: [{
+                    label: 'Tests',
+                    data: [8, 7, 1, 3],
+                    backgroundColor: ['#667eea', '#27ae60', '#e74c3c', '#f39c12']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Healing Success Chart
+        const healingCtx = document.getElementById('healingChart').getContext('2d');
+        new Chart(healingCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Selector Fallback', 'Endpoint Discovery', 'Text Matching'],
+                datasets: [{
+                    data: [2, 1, 1],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Browser Performance Chart
+        const browserCtx = document.getElementById('browserChart').getContext('2d');
+        new Chart(browserCtx, {
+            type: 'line',
+            data: {
+                labels: ['DOM Loaded', 'Page Complete', 'First Paint', 'FCP'],
+                datasets: [
+                    {
+                        label: 'Chromium',
+                        data: [234, 456, 123, 178],
+                        borderColor: '#667eea',
+                        fill: false
+                    },
+                    {
+                        label: 'Firefox',
+                        data: [267, 489, 134, 192],
+                        borderColor: '#f39c12',
+                        fill: false
+                    },
+                    {
+                        label: 'Safari',
+                        data: [298, 512, 145, 201],
+                        borderColor: '#e74c3c',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        title: { display: true, text: 'Time (ms)' }
                     }
                 }
-            });
+            }
+        });
 
-            // Test Results Chart
-            const testResultsCtx = document.getElementById('testResultsChart').getContext('2d');
-            new Chart(testResultsCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Passed', 'Failed', 'Self-Healed'],
-                    datasets: [{
-                        label: 'Test Results',
-                        data: [4, 1, 3],
-                        backgroundColor: ['#28a745', '#dc3545', '#ffc107']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Healing Success Chart
-            const healingCtx = document.getElementById('healingChart').getContext('2d');
-            new Chart(healingCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Successful Healing', 'Failed Healing'],
-                    datasets: [{
-                        data: [3, 2],
-                        backgroundColor: ['#667eea', '#e0e0e0']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
-
-            // Browser Performance Chart
-            const browserCtx = document.getElementById('browserChart').getContext('2d');
-            new Chart(browserCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Chromium', 'Firefox', 'Safari'],
-                    datasets: [{
-                        label: 'Load Time (ms)',
-                        data: [456, 489, 512],
-                        backgroundColor: ['#667eea', '#764ba2', '#f093fb']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Performance Chart
-            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(performanceCtx, {
-                type: 'line',
-                data: {
-                    labels: ['10 Users', '50 Users', '100 Users'],
-                    datasets: [{
+        // Load Test Chart
+        const loadCtx = document.getElementById('loadChart').getContext('2d');
+        new Chart(loadCtx, {
+            type: 'line',
+            data: {
+                labels: ['10 Users', '50 Users', '100 Users'],
+                datasets: [
+                    {
                         label: 'Avg Response Time (ms)',
                         data: [165, 225, 300],
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4
-                    }, {
-                        label: 'Max Response Time (ms)',
-                        data: [330, 450, 600],
-                        borderColor: '#dc3545',
-                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                        fill: true
+                    },
+                    {
+                        label: 'Error Rate (%)',
+                        data: [2, 2, 4],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: true,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Response Time (ms)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Error Rate (%)' },
+                        grid: { drawOnChartArea: false }
                     }
                 }
-            });
+            }
         });
+
+        // Generate heatmap
+        const heatmapContainer = document.getElementById('heatmap');
+        const files = [
+            { name: 'Service Layer', status: 'changed' },
+            { name: 'UI Forms', status: 'changed' },
+            { name: 'Controllers', status: 'unchanged' },
+            { name: 'Models', status: 'unchanged' },
+            { name: 'Utils', status: 'unchanged' },
+            { name: 'Config', status: 'unchanged' },
+            { name: 'Database', status: 'unchanged' },
+            { name: 'Security', status: 'unchanged' }
+        ];
+        
+        files.forEach(file => {
+            const cell = document.createElement('div');
+            cell.className = `heatmap-cell ${file.status}`;
+            cell.textContent = file.name;
+            cell.title = file.status === 'changed' ? 'Tested' : 'Skipped (unchanged)';
+            heatmapContainer.appendChild(cell);
+        });
+
+        // Update timestamp
+        setInterval(() => {
+            document.getElementById('timestamp').textContent = new Date().toISOString();
+        }, 60000);
     </script>
 </body>
 </html>
